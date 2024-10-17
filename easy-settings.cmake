@@ -16,7 +16,7 @@
 #
 # Then
 #
-# ../griddle --PLATFORM=sabre --SIMULATION
+# ../griddle --PLATFORM=sabre --SIMULATION=ON
 # ninja
 #
 set(SIMULATION OFF CACHE BOOL "Include only simulation compatible tests")
