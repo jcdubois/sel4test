@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: BSD-2-Clause
 #
 
-cmake_minimum_required(VERSION 3.7.2)
+cmake_minimum_required(VERSION 3.16.0)
 
 set(project_dir "${CMAKE_CURRENT_LIST_DIR}/../..")
 file(GLOB project_modules ${project_dir}/projects/*)
@@ -48,6 +48,13 @@ if(NOT Sel4testAllowSettingsOverride)
         set(KernelArmHypervisorSupport ON CACHE BOOL "" FORCE)
     endif()
 
+    if(KernelSel4ArchAarch32)
+        set(KernelArmTLSReg tpidruro CACHE STRING "" FORCE)
+    endif()
+    if(KernelSel4ArchAarch64)
+        set(KernelArmTLSReg tpidru CACHE STRING "" FORCE)
+    endif()
+
     if(KernelPlatformQEMUArmVirt OR KernelPlatformQEMURiscVVirt OR KernelPlatformSpike)
         set(SIMULATION ON CACHE BOOL "" FORCE)
     endif()
@@ -68,29 +75,6 @@ if(NOT Sel4testAllowSettingsOverride)
     else()
         set(Sel4testSimulation OFF CACHE BOOL "" FORCE)
         set(Sel4testHaveCache ON CACHE BOOL "" FORCE)
-    endif()
-
-    if(KernelPlatformQEMUArmVirt)
-        if(KernelArmExportPCNTUser AND KernelArmExportPTMRUser)
-            set(Sel4testHaveTimer ON CACHE BOOL "" FORCE)
-        else()
-            set(Sel4testHaveTimer OFF CACHE BOOL "" FORCE)
-        endif()
-    elseif(
-        KernelPlatformZynqmp
-        OR KernelPlatformPolarfire
-        OR KernelPlatformQuartz64
-        OR KernelPlatformRocketchip
-        OR KernelPlatformRocketchipZCU102
-        OR (SIMULATION AND (KernelArchRiscV OR KernelArchARM))
-    )
-        # Frequency settings of the ZynqMP make the ltimer tests problematic
-        # Polarfire does not have a complete ltimer implementation
-        # Quartz64 does not have a complete ltimer implementation
-        # Rocket Chip on the ZCU102 FPGA does not have a timer peripheral
-        set(Sel4testHaveTimer OFF CACHE BOOL "" FORCE)
-    else()
-        set(Sel4testHaveTimer ON CACHE BOOL "" FORCE)
     endif()
 
     # Check the hardware debug API non simulated (except for ia32, which can be simulated),
